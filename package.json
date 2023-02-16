@@ -1,0 +1,35 @@
+{
+  "name": "wc-js-utils",
+  "displayName": "Webcomponents jsutils",
+  "description": "Webcomponents jsutils",
+  "version": "0.0.0",
+  "main": "main.js",
+  "publishConfig": {
+    "access": "public"
+  },
+  "author": "Dario Caruso <dev@dariocaruso.info> (https://dariocaruso.info)",
+  "authorUrl": "https://dariocaruso.info",
+  "license": "MIT",
+  "license-docs": "CC BY 4.0",
+  "license-translations": "CC BY 4.0",
+  "license-images": "CC BY-NC 4.0",
+  "engines": {
+    "node": ">=14.0.0"
+  },
+  "scripts": {
+    "build": "./node_modules/typescript/bin/tsc",
+    "watch-ts": "./node_modules/typescript/bin/tsc -w",
+    "release:patch": "npm version patch && git push && git push --tags && npm publish",
+    "release:minor": "npm version minor && git push && git push --tags && npm publish",
+    "release:major": "npm version major && git push && git push --tags && npm publish"
+  },
+  "keywords": [
+    "svelte",
+    "svelte-webcomponents",
+    "webcomponents"
+  ],
+  "contributors": [],
+  "devDependencies": {
+    "typescript": "^4.2.4"
+  }
+}
