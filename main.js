@@ -48,6 +48,7 @@ function addComponent(opts) {
 exports.addComponent = addComponent;
 var LanguageTranslator = /** @class */ (function () {
     function LanguageTranslator(opts) {
+        this.lang = LanguageTranslator.getDefaultLang();
         if (!(opts === null || opts === void 0 ? void 0 : opts.dictionary))
             throw new Error("no dictionary provided");
         this.dictionary = opts.dictionary;
@@ -55,8 +56,8 @@ var LanguageTranslator = /** @class */ (function () {
     }
     LanguageTranslator.prototype.setLang = function (lang) {
         if (!lang)
-            lang = LanguageTranslator.getDefaultLang();
-        this.lang = lang;
+            throw new Error("no lang provided");
+        lang = this.lang = lang;
     };
     LanguageTranslator.prototype.translateWord = function (wordKey, lang) {
         return LanguageTranslator.getDictionaryWord(wordKey, this.dictionary, lang || this.lang);

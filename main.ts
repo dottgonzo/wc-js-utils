@@ -123,15 +123,14 @@ export function addComponent(opts?: {
       }
       document.head.appendChild(script);
     } catch (err) {
-      console.warn(err)
+      console.warn(err);
     }
-
   }
 }
 
 export class LanguageTranslator {
   dictionary: { [x: string]: { [x: string]: string } };
-  lang: string;
+  lang = LanguageTranslator.getDefaultLang();
   constructor(opts: {
     lang?: string;
     dictionary: { [x: string]: { [x: string]: string } };
@@ -141,8 +140,8 @@ export class LanguageTranslator {
     this.setLang(opts?.lang);
   }
   setLang(lang?: string) {
-    if (!lang) lang = LanguageTranslator.getDefaultLang();
-    this.lang = lang;
+    if (!lang) throw new Error("no lang provided");
+    lang = this.lang = lang;
   }
 
   translateWord(wordKey: string, lang?: string) {
