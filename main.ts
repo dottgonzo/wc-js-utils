@@ -183,7 +183,7 @@ export class LanguageTranslator {
       navigator?.languages &&
       navigator.languages[0]?.split("-")[0]?.toLowerCase()?.length
     ) {
-      browserLang = navigator.languages[0]?.split("-")[0]?.toLowerCase();
+      browserLang = navigator.languages[0]!.split("-")[0]!.toLowerCase();
     }
     return browserLang;
   }

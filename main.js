@@ -77,11 +77,11 @@ var LanguageTranslator = /** @class */ (function () {
         return LanguageTranslator.formatDate(dateISOString, timeOptions, lang || this.lang);
     };
     LanguageTranslator.getDefaultLang = function () {
-        var _a, _b, _c, _d, _e;
+        var _a, _b, _c;
         var browserLang = "en";
         if ((navigator === null || navigator === void 0 ? void 0 : navigator.languages) &&
             ((_c = (_b = (_a = navigator.languages[0]) === null || _a === void 0 ? void 0 : _a.split("-")[0]) === null || _b === void 0 ? void 0 : _b.toLowerCase()) === null || _c === void 0 ? void 0 : _c.length)) {
-            browserLang = (_e = (_d = navigator.languages[0]) === null || _d === void 0 ? void 0 : _d.split("-")[0]) === null || _e === void 0 ? void 0 : _e.toLowerCase();
+            browserLang = navigator.languages[0].split("-")[0].toLowerCase();
         }
         return browserLang;
     };
