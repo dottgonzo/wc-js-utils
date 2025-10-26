@@ -44,6 +44,7 @@ export type License = {
 export interface ComponentShortSetup {
   i18n: i18nLang[];
   name: string;
+  description: string;
   category: string;
   tags: string[];
   size: { layout?: "fullscreen" };
@@ -84,22 +85,30 @@ export function getChildStyleToPass(
   vars: CssVar[]
 ) {
   let toreturn = "";
-  if (
-    parsedStyle &&
-    vars?.length &&
-    Object.keys(parsedStyle)?.length &&
-    vars?.filter((f) => Object.keys(parsedStyle).includes(f.name))?.length
-  ) {
-    for (const k of Object.keys(parsedStyle)) {
-      const isPresent = vars?.filter(
-        (f) => f.name === k && f.defaultValue !== parsedStyle[k]
-      );
-      if (isPresent) {
-        toreturn += `${k}:${parsedStyle[k]};`;
+
+  try {
+
+
+    if (
+      parsedStyle &&
+      vars?.length &&
+      Object.keys(parsedStyle)?.length &&
+      vars?.filter((f) => Object.keys(parsedStyle).includes(f.name))?.length
+    ) {
+      for (const k of Object.keys(parsedStyle)) {
+        const isPresent = vars?.filter(
+          (f) => f.name === k && f.defaultValue !== parsedStyle[k]
+        );
+        if (isPresent) {
+          toreturn += `${k}:${parsedStyle[k]};`;
+        }
       }
     }
+  } catch (err) {
+    console.error("error getting child style to pass", err);
+  } finally {
+    return toreturn;
   }
-  return toreturn;
 }
 
 export function addComponent(opts?: {
@@ -112,14 +121,20 @@ export function addComponent(opts?: {
   const componentName = opts?.repoName.split("/")?.[1] || opts?.repoName;
   if (!componentName) throw new Error("wrong componentPath " + opts?.repoName);
   if (!opts?.version) throw new Error("wrong version " + opts?.version);
-  const iifePath = opts?.iifePath || "release/release.js";
+  const iifePath = opts?.iifePath || "main.iife.js";
   if (!document.getElementById(componentName + "-script")) {
     try {
       const script = document.createElement("script");
       script.id = componentName + "-script";
       script.src = `https://cdn.jsdelivr.net/npm/${opts.repoName}@${opts.version}/${iifePath}`;
-      if (opts?.local && location.href.includes("localhost")) {
+      if (opts?.local) {
         script.src = `${opts.local}`;
+      } else if (location.href.includes("localhost:6006")) {
+        const hprefix = componentName.split("-")[0];
+        script.src = `http://localhost:6006/webcomponents/${componentName.replace(
+          hprefix + "-",
+          ""
+        )}/${iifePath}`;
       }
       document.head.appendChild(script);
     } catch (err) {
@@ -130,7 +145,7 @@ export function addComponent(opts?: {
 
 export class LanguageTranslator {
   dictionary: { [x: string]: { [x: string]: string } };
-  lang = LanguageTranslator.getDefaultLang();
+  lang: string = "";
   constructor(opts: {
     lang?: string;
     dictionary: { [x: string]: { [x: string]: string } };
@@ -140,8 +155,8 @@ export class LanguageTranslator {
     this.setLang(opts?.lang);
   }
   setLang(lang?: string) {
-    if (!lang) throw new Error("no lang provided");
-    lang = this.lang = lang;
+    if (!lang) lang = LanguageTranslator.getDefaultLang();
+    this.lang = lang;
   }
 
   translateWord(wordKey: string, lang?: string) {

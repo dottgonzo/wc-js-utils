@@ -1,27 +1,35 @@
 "use strict";
-exports.__esModule = true;
-exports.LanguageTranslator = exports.addComponent = exports.getChildStyleToPass = void 0;
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.LanguageTranslator = void 0;
+exports.getChildStyleToPass = getChildStyleToPass;
+exports.addComponent = addComponent;
 function getChildStyleToPass(parsedStyle, vars) {
     var _a, _b;
     var toreturn = "";
-    if (parsedStyle &&
-        (vars === null || vars === void 0 ? void 0 : vars.length) &&
-        ((_a = Object.keys(parsedStyle)) === null || _a === void 0 ? void 0 : _a.length) &&
-        ((_b = vars === null || vars === void 0 ? void 0 : vars.filter(function (f) { return Object.keys(parsedStyle).includes(f.name); })) === null || _b === void 0 ? void 0 : _b.length)) {
-        var _loop_1 = function (k) {
-            var isPresent = vars === null || vars === void 0 ? void 0 : vars.filter(function (f) { return f.name === k && f.defaultValue !== parsedStyle[k]; });
-            if (isPresent) {
-                toreturn += "".concat(k, ":").concat(parsedStyle[k], ";");
+    try {
+        if (parsedStyle &&
+            (vars === null || vars === void 0 ? void 0 : vars.length) &&
+            ((_a = Object.keys(parsedStyle)) === null || _a === void 0 ? void 0 : _a.length) &&
+            ((_b = vars === null || vars === void 0 ? void 0 : vars.filter(function (f) { return Object.keys(parsedStyle).includes(f.name); })) === null || _b === void 0 ? void 0 : _b.length)) {
+            var _loop_1 = function (k) {
+                var isPresent = vars === null || vars === void 0 ? void 0 : vars.filter(function (f) { return f.name === k && f.defaultValue !== parsedStyle[k]; });
+                if (isPresent) {
+                    toreturn += "".concat(k, ":").concat(parsedStyle[k], ";");
+                }
+            };
+            for (var _i = 0, _c = Object.keys(parsedStyle); _i < _c.length; _i++) {
+                var k = _c[_i];
+                _loop_1(k);
             }
-        };
-        for (var _i = 0, _c = Object.keys(parsedStyle); _i < _c.length; _i++) {
-            var k = _c[_i];
-            _loop_1(k);
         }
     }
-    return toreturn;
+    catch (err) {
+        console.error("error getting child style to pass", err);
+    }
+    finally {
+        return toreturn;
+    }
 }
-exports.getChildStyleToPass = getChildStyleToPass;
 function addComponent(opts) {
     var _a;
     var componentName = ((_a = opts === null || opts === void 0 ? void 0 : opts.repoName.split("/")) === null || _a === void 0 ? void 0 : _a[1]) || (opts === null || opts === void 0 ? void 0 : opts.repoName);
@@ -29,14 +37,18 @@ function addComponent(opts) {
         throw new Error("wrong componentPath " + (opts === null || opts === void 0 ? void 0 : opts.repoName));
     if (!(opts === null || opts === void 0 ? void 0 : opts.version))
         throw new Error("wrong version " + (opts === null || opts === void 0 ? void 0 : opts.version));
-    var iifePath = (opts === null || opts === void 0 ? void 0 : opts.iifePath) || "release/release.js";
+    var iifePath = (opts === null || opts === void 0 ? void 0 : opts.iifePath) || "main.iife.js";
     if (!document.getElementById(componentName + "-script")) {
         try {
             var script = document.createElement("script");
             script.id = componentName + "-script";
             script.src = "https://cdn.jsdelivr.net/npm/".concat(opts.repoName, "@").concat(opts.version, "/").concat(iifePath);
-            if ((opts === null || opts === void 0 ? void 0 : opts.local) && location.href.includes("localhost")) {
+            if (opts === null || opts === void 0 ? void 0 : opts.local) {
                 script.src = "".concat(opts.local);
+            }
+            else if (location.href.includes("localhost:6006")) {
+                var hprefix = componentName.split("-")[0];
+                script.src = "http://localhost:6006/webcomponents/".concat(componentName.replace(hprefix + "-", ""), "/").concat(iifePath);
             }
             document.head.appendChild(script);
         }
@@ -45,10 +57,9 @@ function addComponent(opts) {
         }
     }
 }
-exports.addComponent = addComponent;
 var LanguageTranslator = /** @class */ (function () {
     function LanguageTranslator(opts) {
-        this.lang = LanguageTranslator.getDefaultLang();
+        this.lang = "";
         if (!(opts === null || opts === void 0 ? void 0 : opts.dictionary))
             throw new Error("no dictionary provided");
         this.dictionary = opts.dictionary;
@@ -56,8 +67,8 @@ var LanguageTranslator = /** @class */ (function () {
     }
     LanguageTranslator.prototype.setLang = function (lang) {
         if (!lang)
-            throw new Error("no lang provided");
-        lang = this.lang = lang;
+            lang = LanguageTranslator.getDefaultLang();
+        this.lang = lang;
     };
     LanguageTranslator.prototype.translateWord = function (wordKey, lang) {
         return LanguageTranslator.getDictionaryWord(wordKey, this.dictionary, lang || this.lang);
