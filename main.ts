@@ -50,7 +50,6 @@ export interface ComponentShortSetup {
   size: { layout?: "fullscreen" };
   iifePath: string;
   iifeIntegrity: string;
-  iifeIntegrityType: "sha256" | "sha384" | "sha512";
   repoName: string;
   version: string;
   screenshots: string[];
