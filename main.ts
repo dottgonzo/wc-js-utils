@@ -49,6 +49,8 @@ export interface ComponentShortSetup {
   tags: string[];
   size: { layout?: "fullscreen" };
   iifePath: string;
+  iifeIntegrity: string;
+  iifeIntegrityType: "sha256" | "sha384" | "sha512";
   repoName: string;
   version: string;
   screenshots: string[];
@@ -80,36 +82,7 @@ export interface ComponentSetup extends ComponentShortSetup {
     url?: string;
   }[];
 }
-export function getChildStyleToPass(
-  parsedStyle: { [x: string]: string },
-  vars: CssVar[]
-) {
-  let toreturn = "";
 
-  try {
-
-
-    if (
-      parsedStyle &&
-      vars?.length &&
-      Object.keys(parsedStyle)?.length &&
-      vars?.filter((f) => Object.keys(parsedStyle).includes(f.name))?.length
-    ) {
-      for (const k of Object.keys(parsedStyle)) {
-        const isPresent = vars?.filter(
-          (f) => f.name === k && f.defaultValue !== parsedStyle[k]
-        );
-        if (isPresent) {
-          toreturn += `${k}:${parsedStyle[k]};`;
-        }
-      }
-    }
-  } catch (err) {
-    console.error("error getting child style to pass", err);
-  } finally {
-    return toreturn;
-  }
-}
 
 export function addComponent(opts?: {
   local?: string;

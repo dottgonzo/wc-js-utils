@@ -1,8 +1,12 @@
 {
   "compilerOptions": {
     "sourceMap": true,
-    "lib": ["es2017", "es7", "es6", "DOM"],
-    "baseUrl": ".",
+    "lib": [
+      "es2017",
+      "es7",
+      "es6",
+      "DOM"
+    ],
     "esModuleInterop": true,
     "noImplicitAny": false,
     "noImplicitThis": true,

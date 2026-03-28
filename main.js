@@ -1,54 +1,21 @@
-"use strict";
-Object.defineProperty(exports, "__esModule", { value: true });
-exports.LanguageTranslator = void 0;
-exports.getChildStyleToPass = getChildStyleToPass;
-exports.addComponent = addComponent;
-function getChildStyleToPass(parsedStyle, vars) {
-    var _a, _b;
-    var toreturn = "";
-    try {
-        if (parsedStyle &&
-            (vars === null || vars === void 0 ? void 0 : vars.length) &&
-            ((_a = Object.keys(parsedStyle)) === null || _a === void 0 ? void 0 : _a.length) &&
-            ((_b = vars === null || vars === void 0 ? void 0 : vars.filter(function (f) { return Object.keys(parsedStyle).includes(f.name); })) === null || _b === void 0 ? void 0 : _b.length)) {
-            var _loop_1 = function (k) {
-                var isPresent = vars === null || vars === void 0 ? void 0 : vars.filter(function (f) { return f.name === k && f.defaultValue !== parsedStyle[k]; });
-                if (isPresent) {
-                    toreturn += "".concat(k, ":").concat(parsedStyle[k], ";");
-                }
-            };
-            for (var _i = 0, _c = Object.keys(parsedStyle); _i < _c.length; _i++) {
-                var k = _c[_i];
-                _loop_1(k);
-            }
-        }
-    }
-    catch (err) {
-        console.error("error getting child style to pass", err);
-    }
-    finally {
-        return toreturn;
-    }
-}
-function addComponent(opts) {
-    var _a;
-    var componentName = ((_a = opts === null || opts === void 0 ? void 0 : opts.repoName.split("/")) === null || _a === void 0 ? void 0 : _a[1]) || (opts === null || opts === void 0 ? void 0 : opts.repoName);
+export function addComponent(opts) {
+    const componentName = opts?.repoName.split("/")?.[1] || opts?.repoName;
     if (!componentName)
-        throw new Error("wrong componentPath " + (opts === null || opts === void 0 ? void 0 : opts.repoName));
-    if (!(opts === null || opts === void 0 ? void 0 : opts.version))
-        throw new Error("wrong version " + (opts === null || opts === void 0 ? void 0 : opts.version));
-    var iifePath = (opts === null || opts === void 0 ? void 0 : opts.iifePath) || "main.iife.js";
+        throw new Error("wrong componentPath " + opts?.repoName);
+    if (!opts?.version)
+        throw new Error("wrong version " + opts?.version);
+    const iifePath = opts?.iifePath || "main.iife.js";
     if (!document.getElementById(componentName + "-script")) {
         try {
-            var script = document.createElement("script");
+            const script = document.createElement("script");
             script.id = componentName + "-script";
-            script.src = "https://cdn.jsdelivr.net/npm/".concat(opts.repoName, "@").concat(opts.version, "/").concat(iifePath);
-            if (opts === null || opts === void 0 ? void 0 : opts.local) {
-                script.src = "".concat(opts.local);
+            script.src = `https://cdn.jsdelivr.net/npm/${opts.repoName}@${opts.version}/${iifePath}`;
+            if (opts?.local) {
+                script.src = `${opts.local}`;
             }
             else if (location.href.includes("localhost:6006")) {
-                var hprefix = componentName.split("-")[0];
-                script.src = "http://localhost:6006/webcomponents/".concat(componentName.replace(hprefix + "-", ""), "/").concat(iifePath);
+                const hprefix = componentName.split("-")[0];
+                script.src = `http://localhost:6006/webcomponents/${componentName.replace(hprefix + "-", "")}/${iifePath}`;
             }
             document.head.appendChild(script);
         }
@@ -57,62 +24,59 @@ function addComponent(opts) {
         }
     }
 }
-var LanguageTranslator = /** @class */ (function () {
-    function LanguageTranslator(opts) {
-        this.lang = "";
-        if (!(opts === null || opts === void 0 ? void 0 : opts.dictionary))
+export class LanguageTranslator {
+    dictionary;
+    lang = "";
+    constructor(opts) {
+        if (!opts?.dictionary)
             throw new Error("no dictionary provided");
         this.dictionary = opts.dictionary;
-        this.setLang(opts === null || opts === void 0 ? void 0 : opts.lang);
+        this.setLang(opts?.lang);
     }
-    LanguageTranslator.prototype.setLang = function (lang) {
+    setLang(lang) {
         if (!lang)
             lang = LanguageTranslator.getDefaultLang();
         this.lang = lang;
-    };
-    LanguageTranslator.prototype.translateWord = function (wordKey, lang) {
+    }
+    translateWord(wordKey, lang) {
         return LanguageTranslator.getDictionaryWord(wordKey, this.dictionary, lang || this.lang);
-    };
-    LanguageTranslator.prototype.translateDate = function (dateISOString, timeOptions, lang) {
+    }
+    translateDate(dateISOString, timeOptions, lang) {
         return LanguageTranslator.formatDate(dateISOString, timeOptions, lang || this.lang);
-    };
-    LanguageTranslator.getDefaultLang = function () {
-        var _a, _b, _c;
-        var browserLang = "en";
-        if ((navigator === null || navigator === void 0 ? void 0 : navigator.languages) &&
-            ((_c = (_b = (_a = navigator.languages[0]) === null || _a === void 0 ? void 0 : _a.split("-")[0]) === null || _b === void 0 ? void 0 : _b.toLowerCase()) === null || _c === void 0 ? void 0 : _c.length)) {
+    }
+    static getDefaultLang() {
+        let browserLang = "en";
+        if (navigator?.languages &&
+            navigator.languages[0]?.split("-")[0]?.toLowerCase()?.length) {
             browserLang = navigator.languages[0].split("-")[0].toLowerCase();
         }
         return browserLang;
-    };
-    LanguageTranslator.getDictionaryWord = function (wordKey, dictionary, lang) {
-        var _a;
+    }
+    static getDictionaryWord(wordKey, dictionary, lang) {
         if (!wordKey)
             throw new Error("no wordKey provided");
         if (!dictionary)
             throw new Error("no dictionary provided");
-        if (lang && ((_a = dictionary[lang]) === null || _a === void 0 ? void 0 : _a[wordKey]))
+        if (lang && dictionary[lang]?.[wordKey])
             return dictionary[lang][wordKey];
-        var w = "";
-        var defLng = LanguageTranslator.getDefaultLang();
+        let w = "";
+        const defLng = LanguageTranslator.getDefaultLang();
         if (!lang || defLng !== lang) {
-            var defaultLng = dictionary === null || dictionary === void 0 ? void 0 : dictionary[defLng];
-            if (defaultLng === null || defaultLng === void 0 ? void 0 : defaultLng[wordKey]) {
+            const defaultLng = dictionary?.[defLng];
+            if (defaultLng?.[wordKey]) {
                 w = defaultLng[wordKey];
             }
         }
         return w;
-    };
-    LanguageTranslator.formatDate = function (dateISOString, timeOptions, lang) {
+    }
+    static formatDate(dateISOString, timeOptions, lang) {
         if (!dateISOString)
             throw new Error("no date provided");
         if (typeof dateISOString.getMonth !== "function") {
             throw new Error("wrong date format");
         }
-        var dayDateFormat = new Intl.DateTimeFormat(lang || LanguageTranslator.getDefaultLang(), timeOptions);
+        const dayDateFormat = new Intl.DateTimeFormat(lang || LanguageTranslator.getDefaultLang(), timeOptions);
         return dayDateFormat.format(dateISOString);
-    };
-    return LanguageTranslator;
-}());
-exports.LanguageTranslator = LanguageTranslator;
+    }
+}
 //# sourceMappingURL=main.js.map
