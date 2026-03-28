@@ -19,9 +19,9 @@
   "scripts": {
     "build": "./node_modules/typescript/bin/tsc",
     "watch-ts": "./node_modules/typescript/bin/tsc -w",
-    "release:patch": "npm version patch && git push && git push --tags && npm publish",
-    "release:minor": "npm version minor && git push && git push --tags && npm publish",
-    "release:major": "npm version major && git push && git push --tags && npm publish"
+    "release:patch": "npm version patch && git push && git push --tags && npm publish --//registry.npmjs.org/:_authToken=$NPM_TOKEN",
+    "release:minor": "npm version minor && git push && git push --tags && npm publish --//registry.npmjs.org/:_authToken=$NPM_TOKEN",
+    "release:major": "npm version major && git push && git push --tags && npm publish --//registry.npmjs.org/:_authToken=$NPM_TOKEN"
   },
   "keywords": [
     "svelte",
