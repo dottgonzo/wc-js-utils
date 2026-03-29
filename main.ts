@@ -41,6 +41,11 @@ export type License = {
   currency: "EUR" | "USD";
   conditions?: string;
 };
+export type ComponentDependency = {
+  name: string
+  description?: string
+  dependencies: ComponentDependency[]
+};
 export interface ComponentShortSetup {
   i18n: i18nLang[];
   name: string;
@@ -57,6 +62,7 @@ export interface ComponentShortSetup {
   readmePath: string;
   author: string;
   owner: string;
+  dependencies: ComponentDependency[]
 }
 export interface ComponentSetup extends ComponentShortSetup {
   definitions: {
