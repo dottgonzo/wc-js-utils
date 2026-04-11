@@ -100,7 +100,7 @@ export function addComponent(opts?: {
   if (!componentName) throw new Error("wrong componentPath " + opts?.repoName);
   if (!opts?.version) throw new Error("wrong version " + opts?.version);
   const iifePath = opts?.iifePath || "main.iife.js";
-  if (!document.getElementById(componentName + "-script")) {
+  if (!document.getElementById(componentName + "-script") && (!window || !customElements || (!customElements?.get?.(componentName) && !window?.customElements?.get?.(componentName)))) {
     try {
       const script = document.createElement("script");
       script.id = componentName + "-script";
